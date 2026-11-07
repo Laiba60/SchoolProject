@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login - {{ school }}{% endblock %}
+{% block content %}
+<h1>{{ 'Admin Login' if admin else 'Login' }}</h1>
+{% if not admin %}
+<div class="tabs">
+  <a class="{{ 'active' if role == 'teacher' }}" href="{{ url_for('login', role='teacher') }}">Teacher Login</a>
+  <a class="{{ 'active' if role == 'student' }}" href="{{ url_for('login', role='student') }}">Student Login</a>
+</div>
+{% endif %}
+<form method="post" class="card form narrow">
+  <label>{{ {'teacher':'Teacher ID','student':'Student ID / Roll No','admin':'Admin ID'}[role] }}
+    <input name="uid" required autofocus></label>
+  <label>Password<input type="password" name="password" required></label>
+  <button class="btn">Login</button>
+  {% if not admin %}<p class="muted">New here? <a href="{{ url_for('register', tab=role) }}">Register</a></p>{% endif %}
+</form>
+{% endblock %}

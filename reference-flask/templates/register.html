@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Register - {{ school }}{% endblock %}
+{% block content %}
+<h1>Register</h1>
+<div class="tabs">
+  <a class="{{ 'active' if tab == 'teacher' }}" href="{{ url_for('register', tab='teacher') }}">Teacher Registration</a>
+  <a class="{{ 'active' if tab == 'student' }}" href="{{ url_for('register', tab='student') }}">Student Registration</a>
+</div>
+
+<form method="post" class="card form">
+  <input type="hidden" name="tab" value="{{ tab }}">
+  {% if tab == 'teacher' %}
+    <label>Teacher ID (given by school)<input name="uid" value="{{ form.get('uid','') }}" placeholder="T-101" required></label>
+  {% else %}
+    <label>Student ID / Roll No (given by school)<input name="uid" value="{{ form.get('uid','') }}" placeholder="S-201" required></label>
+  {% endif %}
+  <label>Full Name<input name="name" value="{{ form.get('name','') }}" required></label>
+  {% if tab == 'teacher' %}
+    <label>Subject<input name="subject" value="{{ form.get('subject','') }}" placeholder="English, Math..." required></label>
+  {% else %}
+    <label>Class / Section
+      <select name="class_section" required>
+        <option value="">-- select --</option>
+        {% for c in classes %}<option {{ 'selected' if form.get('class_section') == c }}>{{ c }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Father Name<input name="father" value="{{ form.get('father','') }}" required></label>
+  {% endif %}
+  <label>Mobile Number<input name="mobile" value="{{ form.get('mobile','') }}" inputmode="tel" required></label>
+  <label>Email<input type="email" name="email" value="{{ form.get('email','') }}" required></label>
+  <label>Password<input type="password" name="password" minlength="6" required></label>
+  <label>Confirm Password<input type="password" name="confirm" minlength="6" required></label>
+  {% if tab == 'teacher' %}
+    <fieldset><legend>Class / Section Allotted</legend>
+      {% for c in classes %}<label class="chk"><input type="checkbox" name="sections" value="{{ c }}" {{ 'checked' if c in sel }}> {{ c }}</label>{% endfor %}
+    </fieldset>
+  {% endif %}
+  <button class="btn">Submit for Approval</button>
+  <p class="muted">After registering, your account must be approved by the Admin before you can log in.</p>
+</form>
+
+<h2>Registered Users <small class="muted" id="stamp"></small></h2>
+<div class="card scroll">
+<table id="users">
+  <thead><tr><th>Role</th><th>ID</th><th>Name</th><th>Class / Subject</th><th>Status</th><th class="adm" hidden>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+</div>
+<script src="{{ url_for('static', filename='users.js') }}"></script>
+{% endblock %}

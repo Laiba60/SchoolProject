@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}My Result - {{ school }}{% endblock %}
+{% block content %}
+<h1>My Result</h1>
+<p><b>Student Name:</b> {{ s['name'] }} &nbsp;|&nbsp; <b>Roll No:</b> {{ s['uid'] }} &nbsp;|&nbsp; <b>Class:</b> {{ s['class_section'] }}</p>
+{% if subs %}
+<div class="card scroll">
+<table>
+  <thead><tr><th>Subject</th><th>Total</th><th>Obtained</th><th>%</th><th>Grade</th></tr></thead>
+  {% for r in subs %}
+  <tr><td>{{ r['subject'] }}</td><td>{{ '%g'|format(r['total']) }}</td><td>{{ '%g'|format(r['obtained']) }}</td><td>{{ r['pct'] }}%</td><td>{{ r['grade'] }}</td></tr>
+  {% endfor %}
+  <tfoot><tr><td>TOTAL</td><td>{{ '%g'|format(T) }}</td><td>{{ '%g'|format(O) }}</td><td>{{ p }}%</td><td>{{ gr }}</td></tr></tfoot>
+</table>
+</div>
+<div class="grid">
+  <div class="card stat"><div class="big">{{ p }}%</div>Total Percentage</div>
+  <div class="card stat"><div class="big">{{ gr }}</div>Overall Grade</div>
+</div>
+<p><a class="btn" href="{{ url_for('report_pdf', uid=s['uid'], dl=1) }}">Download as PDF</a></p>
+{% else %}
+<p class="card">No results have been uploaded for you yet.</p>
+{% endif %}
+{% endblock %}

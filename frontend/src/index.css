@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-paper font-sans text-ink antialiased; }
+  h1, h2, h3 { @apply font-serif text-navy; }
+  h1 { @apply text-3xl font-bold; }
+  h2 { @apply text-xl font-semibold; }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-navy; }
+}
+
+@layer components {
+  .panel { @apply rounded-md border border-line bg-white p-4 sm:p-5; }
+  .input { @apply w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm; }
+  .input:disabled { @apply bg-slate-100; }
+  .btn { @apply inline-flex items-center justify-center rounded bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-dark disabled:opacity-50; }
+  .btn-gold { @apply inline-flex items-center justify-center rounded bg-gold px-4 py-2 text-sm font-semibold text-ink hover:bg-yellow-300 disabled:opacity-50; }
+  .btn-ghost { @apply inline-flex items-center justify-center rounded border border-navy px-3 py-1.5 text-sm font-semibold text-navy hover:bg-navy-soft; }
+  .linkbtn { @apply text-sm font-semibold hover:underline disabled:opacity-50; }
+  .tbl { @apply w-full min-w-[560px] border-collapse text-left text-sm; }
+  .tbl th { @apply border-b-2 border-navy bg-navy-soft px-3 py-2 font-semibold text-navy; }
+  .tbl td { @apply border-b border-line px-3 py-2 align-middle; }
+  .tab { @apply flex-1 border-b-4 border-transparent px-4 py-3 text-center font-semibold text-slate-500 hover:text-navy; }
+  .tab-on { @apply border-gold text-navy; }
+}

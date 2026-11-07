@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard - {{ school }}{% endblock %}
+{% block content %}
+<h1>Teacher Dashboard</h1>
+<p class="muted">{{ u['name'] }} · {{ u['uid'] }} · Subject: <b>{{ u['subject'] }}</b> · Sections: {{ secs|join(', ') }}</p>
+
+<h2>Performance / Analytics</h2>
+{% if avg is none %}
+  <p class="card">No results uploaded yet. Upload results below to see analytics.</p>
+{% else %}
+<div class="grid">
+  <div class="card stat"><div class="big">{{ avg }}%</div>Average result of {{ u['subject'] }}</div>
+  <div class="card">
+    <h3>Grade Distribution</h3>
+    {% set mx = dist.values()|max or 1 %}
+    {% for gname, n in dist.items() %}
+      <div class="bar"><span class="lbl">{{ gname }}</span><div class="fill" style="width: {{ (n / mx * 100)|round }}%"></div><span class="n">{{ n }}</span></div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <h3>Section-wise Average</h3>
+    {% for sec, a in sec_avg.items() %}
+      <div class="bar"><span class="lbl">{{ sec }}</span><div class="fill alt" style="width: {{ a }}%"></div><span class="n">{{ a }}%</span></div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<h2 id="upload">Result Upload</h2>
+<div class="grid">
+  <form class="card form" method="post" action="{{ url_for('teacher_manual') }}">
+    <h3>Manual Entry</h3>
+    <label>Student (Roll No)
+      <select name="roll" required>
+        <option value="">-- select --</option>
+        {% for s in students %}<option value="{{ s['uid'] }}">{{ s['uid'] }} - {{ s['name'] }} ({{ s['class_section'] }})</option>{% endfor %}
+      </select>
+    </label>
+    <label>Total Marks<input type="number" name="total" min="1" step="any" required></label>
+    <label>Obtained Marks<input type="number" name="obtained" min="0" step="any" required></label>
+    <button class="btn">Save Result</button>
+  </form>
+  <form class="card form" method="post" action="{{ url_for('teacher_upload') }}" enctype="multipart/form-data">
+    <h3>Excel Upload</h3>
+    <p class="muted">Columns: Student Name, Roll No, Total Marks, Obtained Marks. <a href="{{ url_for('template_xlsx') }}">Download template</a></p>
+    <input type="file" name="file" accept=".xlsx" required>
+    <button class="btn">Upload</button>
+  </form>
+</div>
+
+{% if res %}
+<div class="card scroll">
+<table>
+  <thead><tr><th>Roll No</th><th>Name</th><th>Section</th><th>Total</th><th>Obtained</th><th>%</th><th>Grade</th><th></th></tr></thead>
+  {% for r in res %}
+  <tr><td>{{ r['student_uid'] }}</td><td>{{ r['student_name'] }}</td><td>{{ r['class_section'] }}</td><td>{{ '%g'|format(r['total']) }}</td><td>{{ '%g'|format(r['obtained']) }}</td><td>{{ r['pct'] }}%</td><td>{{ r['grade'] }}</td>
+    <td><form method="post" action="{{ url_for('teacher_del', rid=r['id']) }}" onsubmit="return confirm('Delete this result?')"><button class="link danger">Delete</button></form></td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endif %}
+
+<h2>Student List</h2>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Roll No</th><th>Name</th><th>Section</th><th>Father</th><th>Mobile</th><th>Status</th></tr></thead>
+  {% for s in students %}
+  <tr><td>{{ s['uid'] }}</td><td>{{ s['name'] }}</td><td>{{ s['class_section'] }}</td><td>{{ s['father'] }}</td><td>{{ s['mobile'] }}</td><td><span class="pill {{ s['status']|lower }}">{{ s['status'] }}</span></td></tr>
+  {% else %}<tr><td colspan="6" class="muted">No students enrolled in your sections yet.</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

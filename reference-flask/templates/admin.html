@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel - {{ school }}{% endblock %}
+{% block content %}
+<h1>Admin Panel</h1>
+
+<h2>Approve / Block Users <small class="muted" id="stamp"></small></h2>
+<div class="card scroll">
+<table id="users">
+  <thead><tr><th>Role</th><th>ID</th><th>Name</th><th>Class / Subject</th><th>Status</th><th class="adm" hidden>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
+</div>
+
+<h2 id="classes">Classes &amp; Sections</h2>
+<div class="grid">
+  <form class="card form" method="post" action="{{ url_for('admin_class') }}">
+    <label>Class<input name="cls" placeholder="e.g. 9th" required></label>
+    <label>Sections (comma separated)<input name="sections" placeholder="A, B, C"></label>
+    <button class="btn">Create</button>
+  </form>
+  <div class="card">
+    {% for c in classes %}
+      <form class="chip" method="post" action="{{ url_for('admin_class_del', cid=c['id']) }}" onsubmit="return confirm('Delete {{ c['label'] }}?')">{{ c['label'] }} <button class="link danger" title="Delete">&times;</button></form>
+    {% endfor %}
+  </div>
+</div>
+
+<h2>Overall Results by Teacher</h2>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Teacher</th><th>Subject</th><th>Results entered</th><th>Average</th></tr></thead>
+  {% for t in stats %}
+  <tr><td>{{ t['name'] }} ({{ t['uid'] }})</td><td>{{ t['subject'] }}</td><td>{{ t['n'] }}</td><td>{{ (t['avg'] ~ '%') if t['avg'] is not none else '-' }}</td></tr>
+  {% else %}<tr><td colspan="4" class="muted">No teachers yet.</td></tr>
+  {% endfor %}
+</table>
+</div>
+
+<h2 id="results">Manage Results</h2>
+<div class="card scroll">
+<table>
+  <thead><tr><th>Roll No</th><th>Student</th><th>Section</th><th>Subject</th><th>Teacher</th><th>Marks</th><th>%</th><th>Grade</th><th></th></tr></thead>
+  {% for r in res %}
+  <tr><td>{{ r['student_uid'] }}</td><td>{{ r['student_name'] }}</td><td>{{ r['class_section'] }}</td><td>{{ r['subject'] }}</td><td>{{ r['tname'] }}</td>
+    <td>{{ '%g'|format(r['obtained']) }}/{{ '%g'|format(r['total']) }}</td><td>{{ r['pct'] }}%</td><td>{{ r['grade'] }}</td>
+    <td class="nowrap"><a href="{{ url_for('report_pdf', uid=r['student_uid']) }}" target="_blank">PDF</a>
+      <form class="inline" method="post" action="{{ url_for('admin_result_del', rid=r['id']) }}" onsubmit="return confirm('Delete this result?')"><button class="link danger">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="9" class="muted">No results uploaded yet.</td></tr>
+  {% endfor %}
+</table>
+</div>
+<p class="muted">The PDF report cards carry the Center of Excellence logo and watermark. Replace static/logo.png with the official logo.</p>
+<script src="{{ url_for('static', filename='users.js') }}"></script>
+{% endblock %}
